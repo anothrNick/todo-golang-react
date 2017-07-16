@@ -1,0 +1,14 @@
+version: '2'
+services:
+  app:
+    build: 
+      context: .
+      dockerfile: Dockerfile.app
+    ports:
+    - "5001:5001"
+  ui:
+    build:
+      context: .
+      dockerfile: Dockerfile.ui
+    ports:
+    - "8080:80"
