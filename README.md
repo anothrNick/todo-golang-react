@@ -4,6 +4,8 @@ A simple, dockerized, golang RESTful API with react frontend.
 Golang RESTful API based on [this tutorial](https://medium.com/@thedevsaddam/build-restful-api-service-in-golang-using-gin-gonic-framework-85b1a6e176f3)
 
 ### Commands
+*Note*: You will need to `yarn install` and `yarn build` before running the containers. The ui container copies the `build/` directory.
+
 ```bash
 # build app/ui docker images
 $ make build
