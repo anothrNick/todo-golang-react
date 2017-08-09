@@ -5,7 +5,6 @@ import (
 	"github.com/jinzhu/gorm"
 	_ "github.com/jinzhu/gorm/dialects/sqlite"	
 	"net/http"
-	"strconv"
 )
 
 func main() {
@@ -14,6 +13,7 @@ func main() {
 	db.AutoMigrate(&Todo{})
 
 	router := gin.Default()
+       router.Use(CORSMiddleware())
 
 	v1 := router.Group("/api/v1/todos")
 	 {
@@ -39,6 +39,22 @@ type TransformedTodo struct {
 	Completed 	bool 	`json:"completed"`
 }
 
+func CORSMiddleware() gin.HandlerFunc {
+    return func(c *gin.Context) {
+        c.Writer.Header().Set("Access-Control-Allow-Origin", "*")
+        c.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+        c.Writer.Header().Set("Access-Control-Allow-Headers", "Content-Type, Content-Length, Accept-Encoding, X-CSRF-Token, Authorization, accept, origin, Cache-Control, X-Requested-With")
+        c.Writer.Header().Set("Access-Control-Allow-Methods", "POST, OPTIONS, GET, PUT, DELETE")
+
+        if c.Request.Method == "OPTIONS" {
+            c.AbortWithStatus(204)
+            return
+        }
+
+        c.Next()
+    }
+}
+
 func Database() *gorm.DB {
 	db, err := gorm.Open("sqlite3", "/tmp/todo.db")
 	if err != nil {
@@ -48,8 +64,10 @@ func Database() *gorm.DB {
 }
 
 func CreateTodo(c *gin.Context) {
-	completed, _ := strconv.Atoi(c.PostForm("completed"))
-	todo := Todo{Title: c.PostForm("title"), Completed: completed};
+       var todo Todo
+       c.BindJSON(&todo)
+	// completed, _ := strconv.Atoi(c.PostForm("completed"))
+	// todo := Todo{Title: c.PostForm("title"), Completed: completed};
 	db := Database()
 	db.Save(&todo)
 	c.JSON(http.StatusCreated, gin.H{"status" : http.StatusCreated, "message" : "Todo item created successfully!", "resourceId" : todo.ID})
@@ -105,6 +123,8 @@ func FetchSingleTodo(c *gin.Context) {
 
 func UpdateTodo(c *gin.Context) {
        var todo Todo
+       var updatedTodo Todo
+
        todoId := c.Param("id")
        db := Database()
        db.First(&todo, todoId)
@@ -114,9 +134,9 @@ func UpdateTodo(c *gin.Context) {
               return
        }
 
-       db.Model(&todo).Update("title", c.PostForm("title"))
-       completed, _ := strconv.Atoi(c.PostForm("completed"))
-       db.Model(&todo).Update("completed", completed)
+       c.BindJSON(&updatedTodo)
+       db.Model(&todo).Update("title", updatedTodo.Title)
+       db.Model(&todo).Update("completed", updatedTodo.Completed)
        c.JSON(http.StatusOK, gin.H{"status" : http.StatusOK, "message" : "Todo updated successfully!"})
 }
 

@@ -1,8 +1,15 @@
-.App {
-  border: 2px solid black;
-  text-align: center;
+.app {
   background: #f5f5f5;
   color: #333;
-  margin: 20px;
+  margin: auto;
+  width: 300px;
   padding: 20px;
+}
+
+.center {
+  text-align: center;
+}
+
+.delete {
+  float: right;
 }

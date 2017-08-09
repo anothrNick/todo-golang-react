@@ -12,3 +12,7 @@ services:
       dockerfile: Dockerfile.ui
     ports:
     - "8080:80"
+    links:
+    - "app:api"
+    environment:
+    - API_HOST=api

@@ -10,6 +10,10 @@ ENV SRC_DIR=/go/src/github.com/anothrnick/todo-golang-react/
 ADD app/* $SRC_DIR
 
 # Build it:
-RUN cd $SRC_DIR; go get github.com/gin-gonic/gin; go get github.com/jinzhu/gorm; go get github.com/jinzhu/gorm/dialects/sqlite; go build -o todo-app; cp todo-app /app/;
+RUN cd $SRC_DIR;\
+    go get github.com/gin-gonic/gin;\
+    go get github.com/jinzhu/gorm;\
+    go get github.com/jinzhu/gorm/dialects/sqlite;\
+    go build -o todo-app; cp todo-app /app/;
 
 ENTRYPOINT ["./todo-app"]
